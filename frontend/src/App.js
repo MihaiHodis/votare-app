@@ -49,7 +49,9 @@ function App() {
   if (loading) return <p>Se încarcă voturile...</p>;
 
   const handleLogout = () => {
-    localStorage.removeItem("cnp_user");
+    // Elimina CNP-ul salvat la autentificare si starea de vot
+    localStorage.removeItem("votCNP");
+    localStorage.removeItem("hasVoted");
     setCnp(null); // trimite la componenta de autentificare
   };
 
