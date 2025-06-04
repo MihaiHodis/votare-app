@@ -1,0 +1,21 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_votare
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: votare
+      MYSQL_USER: vot
+      MYSQL_PASSWORD: vot123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:
