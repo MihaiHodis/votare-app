@@ -33,7 +33,7 @@ function NavbarPersonalizat({ handleLogout }) {
               Adaugă opțiune
             </Nav.Link>
             <Nav.Link as={Link} to="/asistent">
-              Voteaza informat
+              Votează informat
             </Nav.Link>
           </Nav>
 
