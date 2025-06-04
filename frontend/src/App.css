@@ -1,0 +1,41 @@
+body {
+  background-image: url('../public/images/vote-bg2.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+[data-theme='light'] body::before {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='dark'] body::before {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='dark'] .card {
+  background-color: #2c2c2c;
+  color: #f0f0f0;
+}
+
+[data-theme='dark'] .list-group-flush .list-group-item {
+  background-color: transparent;
+  color: #f8f9fa;
+}
+
+[data-theme='dark'] .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
