@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import axios from "axios";
 
-function OptiuniVot({ optiune, voturi, cnp, onVote, aVotat }) {
+function OptiuniVot({ optiune, voturi, imagePath, cnp, onVote, aVotat }) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // ✅ loading state
@@ -34,7 +34,7 @@ function OptiuniVot({ optiune, voturi, cnp, onVote, aVotat }) {
     <Card className="mb-3 shadow-sm">
       <Card.Img
         variant="top"
-        src="/images/vote-bg.jpg"
+        src={imagePath || "/images/vote-bg.jpg"}
         alt={`Imagine ${optiune}`}
       />
       <Card.Body>

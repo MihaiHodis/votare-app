@@ -37,11 +37,11 @@ function App() {
     setAVotat(true); // Setează starea că a votat
   };
 
-  const adaugaOptiune = (nouaOptiune) => {
+  const adaugaOptiune = (nouaOptiune, cale) => {
     if (!votes.hasOwnProperty(nouaOptiune)) {
       setVotes((prevVotes) => ({
         ...prevVotes,
-        [nouaOptiune]: 0,
+        [nouaOptiune]: { voturi: 0, image_path: cale },
       }));
     }
   };
@@ -82,7 +82,8 @@ function App() {
                         <OptiuniVot
                           key={optiune}
                           optiune={optiune}
-                          voturi={votes[optiune]}
+                          voturi={votes[optiune].voturi}
+                          imagePath={votes[optiune].image_path}
                           cnp={cnp}
                           onVote={handleVote}
                           aVotat={aVotat}
