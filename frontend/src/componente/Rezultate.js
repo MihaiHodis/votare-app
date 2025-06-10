@@ -2,21 +2,22 @@ import React from 'react';
 import { Card, ListGroup, Badge, ProgressBar } from 'react-bootstrap';
 
 function Rezultate({ voturi }) {
-  const totalVoturi = Object.values(voturi).reduce((sum, val) => sum + val, 0);
+  const totalVoturi = Object.values(voturi).reduce((sum, val) => sum + val.voturi, 0);
 
   if (totalVoturi === 0) {
     return <p className="mt-4">Nu s-a înregistrat niciun vot încă.</p>;
   }
 
   // Sortare descrescătoare după număr voturi
-  const voturiSortate = Object.entries(voturi).sort((a, b) => b[1] - a[1]);
+  const voturiSortate = Object.entries(voturi).sort((a, b) => b[1].voturi - a[1].voturi);
 
   return (
     <Card className="mt-4 shadow-sm">
       <Card.Body>
         <Card.Title className="mb-4">Rezultate</Card.Title>
         <ListGroup variant="flush">
-          {voturiSortate.map(([optiune, numarVoturi]) => {
+          {voturiSortate.map(([optiune, data]) => {
+            const numarVoturi = data.voturi;
             const procent = ((numarVoturi / totalVoturi) * 100).toFixed(1);
             return (
               <ListGroup.Item key={optiune}>

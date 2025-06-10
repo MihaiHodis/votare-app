@@ -4,17 +4,20 @@ import axios from 'axios';
 
 function FormularAdaugareOptiune({ onAdaugaOptiune }) {
   const [input, setInput] = useState('');
+  const [pathInput, setPathInput] = useState('');
   const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const optiune = input.trim();
-    if (optiune === '') return;
+    const cale = pathInput.trim();
+    if (optiune === '' || cale === '') return;
 
-    axios.post('http://localhost:5000/add-option', { option: optiune })
+    axios.post('http://localhost:5000/add-option', { option: optiune, path: cale })
       .then(() => {
-        onAdaugaOptiune(optiune);
+        onAdaugaOptiune(optiune, cale);
         setInput('');
+        setPathInput('');
         setError(null);
       })
       .catch(err => {
@@ -37,6 +40,16 @@ function FormularAdaugareOptiune({ onAdaugaOptiune }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="ex: Rățuște"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>URL imagine</Form.Label>
+              <Form.Control
+                type="text"
+                value={pathInput}
+                onChange={(e) => setPathInput(e.target.value)}
+                placeholder="ex: /images/vote-bg.jpg"
               />
             </Form.Group>
 
