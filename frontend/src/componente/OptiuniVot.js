@@ -32,6 +32,11 @@ function OptiuniVot({ optiune, voturi, cnp, onVote, aVotat }) {
 
   return (
     <Card className="mb-3 shadow-sm">
+      <Card.Img
+        variant="top"
+        src="/images/vote-bg.jpg"
+        alt={`Imagine ${optiune}`}
+      />
       <Card.Body>
         <Card.Title>{optiune}</Card.Title>
         <Card.Text>{voturi} voturi</Card.Text>
