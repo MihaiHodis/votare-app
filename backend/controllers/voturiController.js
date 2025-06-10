@@ -2,9 +2,18 @@ const pool = require('../database');
 
 const getVotes = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT nume, voturi FROM optiuni');
+    const [rows] = await pool.query(`
+      SELECT o.nume, o.voturi, p.image_path
+      FROM optiuni o
+      LEFT JOIN option_paths p ON o.nume = p.option_name
+    `);
     const result = {};
-    rows.forEach(row => result[row.nume] = row.voturi);
+    rows.forEach(row => {
+      result[row.nume] = {
+        voturi: row.voturi,
+        image_path: row.image_path
+      };
+    });
     res.json(result);
   } catch (err) {
     console.error("Eroare la preluarea voturilor:", err);
@@ -45,9 +54,18 @@ const voteOption = async (req, res) => {
     }
 
     // Returnează datele actualizate
-    const [updated] = await pool.query('SELECT nume, voturi FROM optiuni');
+    const [updated] = await pool.query(`
+      SELECT o.nume, o.voturi, p.image_path
+      FROM optiuni o
+      LEFT JOIN option_paths p ON o.nume = p.option_name
+    `);
     const result = {};
-    updated.forEach(row => result[row.nume] = row.voturi);
+    updated.forEach(row => {
+      result[row.nume] = {
+        voturi: row.voturi,
+        image_path: row.image_path
+      };
+    });
     res.json(result);
   } catch (err) {
     console.error("Eroare la votare:", err);
@@ -56,11 +74,12 @@ const voteOption = async (req, res) => {
 };
 
 const addOption = async (req, res) => {
-  const { option } = req.body;
-  if (!option) return res.status(400).json({ error: 'Opțiune lipsă' });
+  const { option, path } = req.body;
+  if (!option || !path) return res.status(400).json({ error: 'Date incomplete' });
 
   try {
     await pool.query('INSERT INTO optiuni (nume) VALUES (?)', [option]);
+    await pool.query('INSERT INTO option_paths (option_name, image_path) VALUES (?, ?)', [option, path]);
     res.json({ success: true });
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY') {
