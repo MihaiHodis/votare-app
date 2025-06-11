@@ -2,31 +2,30 @@ import React from 'react';
 import { Card, ListGroup, Badge, ProgressBar } from 'react-bootstrap';
 
 function Rezultate({ voturi }) {
-  const totalVoturi = Object.values(voturi).reduce((sum, val) => sum + val, 0);
-
-  if (totalVoturi === 0) {
+  if (!Array.isArray(voturi) || voturi.length === 0) {
     return <p className="mt-4">Nu s-a înregistrat niciun vot încă.</p>;
   }
 
-  // Sortare descrescătoare după număr voturi
-  const voturiSortate = Object.entries(voturi).sort((a, b) => b[1] - a[1]);
+  const totalVoturi = voturi.reduce((sum, opt) => sum + opt.voturi, 0);
+
+  const voturiSortate = [...voturi].sort((a, b) => b.voturi - a.voturi);
 
   return (
     <Card className="mt-4 shadow-sm">
       <Card.Body>
         <Card.Title className="mb-4">Rezultate</Card.Title>
         <ListGroup variant="flush">
-          {voturiSortate.map(([optiune, numarVoturi]) => {
-            const procent = ((numarVoturi / totalVoturi) * 100).toFixed(1);
+          {voturiSortate.map((opt) => {
+            const procent = totalVoturi ? ((opt.voturi / totalVoturi) * 100).toFixed(1) : 0;
             return (
-              <ListGroup.Item key={optiune}>
+              <ListGroup.Item key={opt.id}>
                 <div className="d-flex justify-content-between align-items-center mb-1">
-                  <strong className="text-capitalize">{optiune}</strong>
+                  <strong>{opt.nume}</strong>
                   <Badge bg="info">{procent}%</Badge>
                 </div>
                 <ProgressBar
                   now={procent}
-                  label={`${numarVoturi} voturi`}
+                  label={`${opt.voturi} voturi`}
                   striped
                   variant="primary"
                 />

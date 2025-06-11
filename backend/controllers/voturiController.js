@@ -2,9 +2,20 @@ const pool = require('../database');
 
 const getVotes = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT nume, voturi FROM optiuni');
-    const result = {};
-    rows.forEach(row => result[row.nume] = row.voturi);
+    const [rows] = await pool.query(`
+      SELECT o.id, o.nume, o.voturi, p.image_path
+      FROM optiuni o
+      LEFT JOIN option_paths p ON o.id = p.optiune_id
+    `);
+
+    // Formatează ca array de obiecte
+    const result = rows.map(row => ({
+      id: row.id,
+      nume: row.nume,
+      voturi: row.voturi,
+      imagine: row.image_path || null
+    }));
+
     res.json(result);
   } catch (err) {
     console.error("Eroare la preluarea voturilor:", err);
@@ -13,41 +24,45 @@ const getVotes = async (req, res) => {
 };
 
 const voteOption = async (req, res) => {
-  const { option, cnp } = req.body;
-  console.log("CNP primit:", cnp);
-  console.log("Request body:", req.body);
-  if (!option || !cnp || cnp.length !== 13) {
+  const { option_id, cnp } = req.body;
+  console.log("Votare opțiune:", option_id, cnp);
+
+  if (!option_id || !cnp || cnp.length !== 13) {
     return res.status(400).json({ error: "Date incorecte (opțiune sau CNP lipsă/incorect)" });
   }
 
   try {
-    // Verificăm dacă opțiunea există
-    const [exists] = await pool.query('SELECT * FROM optiuni WHERE nume = ?', [option]);
+    // Verifică dacă opțiunea există
+    const [exists] = await pool.query('SELECT * FROM optiuni WHERE id = ?', [option_id]);
     if (exists.length === 0) {
       return res.status(400).json({ error: "Opțiune invalidă" });
     }
 
-    // Verificăm dacă acest CNP a mai votat
+    // Verifică dacă acest CNP a mai votat
     const [cnpExists] = await pool.query('SELECT * FROM votanti WHERE cnp = ?', [cnp]);
     if (cnpExists.length > 0) {
       return res.status(403).json({ error: "Acest CNP a votat deja" });
     }
 
-    // Incrementează voturile
-    await pool.query('UPDATE optiuni SET voturi = voturi + 1 WHERE nume = ?', [option]);
+    // Incrementează voturile pentru opțiunea selectată
+    await pool.query('UPDATE optiuni SET voturi = voturi + 1 WHERE id = ?', [option_id]);
 
-    // Salvează CNP-ul în tabela votanti
+    // Salvează CNP-ul și opțiunea votată
     try {
-      await pool.query('INSERT INTO votanti (cnp, optiune_votata) VALUES (?, ?)', [cnp, option]);
+      await pool.query('INSERT INTO votanti (cnp, optiune_id) VALUES (?, ?)', [cnp, option_id]);
     } catch (insertErr) {
       console.error("Eroare la inserarea în votanti:", insertErr);
       return res.status(500).json({ error: "Eroare la salvarea CNP-ului" });
     }
 
-    // Returnează datele actualizate
-    const [updated] = await pool.query('SELECT nume, voturi FROM optiuni');
-    const result = {};
-    updated.forEach(row => result[row.nume] = row.voturi);
+    // Returnează lista actualizată de voturi
+    const [updated] = await pool.query('SELECT id, nume, voturi FROM optiuni');
+    const result = updated.map(row => ({
+      id: row.id,
+      nume: row.nume,
+      voturi: row.voturi
+    }));
+
     res.json(result);
   } catch (err) {
     console.error("Eroare la votare:", err);

@@ -77,12 +77,14 @@ function App() {
               ) : (
                 <>
                   <Row>
-                    {Object.keys(votes).map((optiune) => (
-                      <Col key={optiune} xs={12} md={6} lg={4}>
+                    {votes.map((optiune) => (
+                      <Col key={optiune.id} xs={12} md={6} lg={4}>
                         <OptiuniVot
-                          key={optiune}
-                          optiune={optiune}
-                          voturi={votes[optiune]}
+                          key={optiune.id}
+                          optiuneId={optiune.id}
+                          nume={optiune.nume}
+                          voturi={optiune.voturi}
+                          imagine={optiune.imagine}
                           cnp={cnp}
                           onVote={handleVote}
                           aVotat={aVotat}
