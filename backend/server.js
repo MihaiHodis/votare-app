@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const voturiRoutes = require('./routes/voturiRoutes');
@@ -12,6 +13,7 @@ const chatRoute = require('./routes/chat');
 app.use(cors());
 app.use(express.json());
 app.use('/api/chat', chatRoute); // Rute pentru chat
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rute
 app.use('/', voturiRoutes);

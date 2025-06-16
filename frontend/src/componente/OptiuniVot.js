@@ -41,7 +41,7 @@ function OptiuniVot({ optiuneId, nume, voturi, imagine, cnp, onVote, aVotat }) {
       {imagine && (
         <Card.Img
           variant="top"
-          src={`/images/${imagine}`}
+          src={`http://localhost:5000/uploads/${imagine}`}
           alt={`Imagine pentru ${nume}`}
           style={{
             height: '370px',

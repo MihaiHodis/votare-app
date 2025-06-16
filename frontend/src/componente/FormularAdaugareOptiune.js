@@ -4,23 +4,30 @@ import axios from 'axios';
 
 function FormularAdaugareOptiune({ onAdaugaOptiune }) {
   const [input, setInput] = useState('');
+  const [imagine, setImagine] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const optiune = input.trim();
-    if (optiune === '') return;
 
-    axios.post('http://localhost:5000/add-option', { option: optiune })
-      .then(() => {
-        onAdaugaOptiune(optiune);
-        setInput('');
-        setError(null);
-      })
-      .catch(err => {
-        const raspuns = err.response?.data?.error || 'Eroare necunoscută';
-        setError(raspuns);
+    if (!input.trim()) return;
+
+    const formData = new FormData();
+    formData.append("nume", input.trim());
+    if (imagine) formData.append("imagine", imagine);
+
+    try {
+      await axios.post('http://localhost:5000/add-option', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
+      onAdaugaOptiune(input.trim());
+      setInput('');
+      setImagine(null);
+      setError(null);
+    } catch (err) {
+      const raspuns = err.response?.data?.error || 'Eroare necunoscută';
+      setError(raspuns);
+    }
   };
 
   return (
@@ -36,20 +43,23 @@ function FormularAdaugareOptiune({ onAdaugaOptiune }) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="ex: Rățuște"
+                placeholder="Nume candidat"
               />
             </Form.Group>
 
-            <Button variant="success" type="submit">
-              Adaugă
-            </Button>
+            <Form.Group className="mb-3">
+              <Form.Label>Imagine opțională</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={(e) => setImagine(e.target.files[0])}
+                accept="image/*"
+              />
+            </Form.Group>
+
+            <Button variant="success" type="submit">Adaugă</Button>
           </Form>
 
-          {error && (
-            <Alert variant="danger" className="mt-3">
-              {error}
-            </Alert>
-          )}
+          {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
         </Card.Body>
       </Card>
     </Container>

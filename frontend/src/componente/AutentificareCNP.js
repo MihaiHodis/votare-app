@@ -26,7 +26,7 @@ function AutentificareCNP({ onCnpConfirmat }) {
         localStorage.setItem("hasVoted", "false");
       }
 
-      onCnpConfirmat(cnp);
+      onCnpConfirmat(cnp, res.data.hasVoted);
     } catch (err) {
       setError("Eroare la verificarea CNP-ului.");
     }

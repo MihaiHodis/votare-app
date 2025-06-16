@@ -30,7 +30,9 @@ function App() {
         console.error("Eroare la preluarea voturilor:", err);
         setLoading(false);
       });
-  }, []);
+      const hasVotedLocal = localStorage.getItem("hasVoted") === "true";
+      setAVotat(hasVotedLocal); // Setează starea de votare în funcție de localStorage
+  }, [cnp]);
 
   const handleVote = (optiuneNoua, voturiActualizate) => {
     setVotes(voturiActualizate);
@@ -57,7 +59,10 @@ function App() {
 
   // Dacă nu există CNP, afișăm formularul de autentificare
   if (!cnp) {
-    return <AutentificareCNP onCnpConfirmat={(cnpNou) => setCnp(cnpNou)} />;
+    return <AutentificareCNP onCnpConfirmat={(cnpNou, aVotatNou) => {
+      setCnp(cnpNou);
+      setAVotat(aVotatNou);
+    }} />;
   }
 
   const hasVoted = localStorage.getItem("hasVoted") === "true";

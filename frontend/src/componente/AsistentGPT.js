@@ -34,7 +34,7 @@ function AsistentGPT() {
       <Form onSubmit={trimiteIntrebare}>
         <Form.Control
           type="text"
-          placeholder="Ex: Ce avantaje are opțiunea Rățuște?"
+          placeholder="Ex: Ce avantaje are candidatul x?"
           value={intrebare}
           onChange={(e) => setIntrebare(e.target.value)}
           className="mb-3"

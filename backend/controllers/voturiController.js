@@ -1,5 +1,25 @@
 const pool = require('../database');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
+// Configurare multer pentru salvarea imaginilor
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '..', 'uploads'), // ✅ corect
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const numeFaraExtensie = path.basename(file.originalname, ext);
+    const uniqueName = `${numeFaraExtensie}-${Date.now()}${ext}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+  
+
+
+
+// Funcții pentru gestionarea voturilor
 const getVotes = async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -71,21 +91,34 @@ const voteOption = async (req, res) => {
 };
 
 const addOption = async (req, res) => {
-  const { option } = req.body;
-  if (!option) return res.status(400).json({ error: 'Opțiune lipsă' });
+  const { nume } = req.body;
+  const imagine = req.file?.filename;
+
+  if (!nume || !imagine) {
+    return res.status(400).json({ error: 'Numele și imaginea sunt obligatorii' });
+  }
 
   try {
-    await pool.query('INSERT INTO optiuni (nume) VALUES (?)', [option]);
+    const [rezultat] = await pool.query('INSERT INTO optiuni (nume) VALUES (?)', [nume]);
+    const optiuneId = rezultat.insertId;
+
+    const caleImagine = `${imagine}`;
+    await pool.query(
+      'INSERT INTO option_paths (optiune_id, image_path) VALUES (?, ?)',
+      [optiuneId, caleImagine]
+    );
+
     res.json({ success: true });
   } catch (err) {
+    console.error("Eroare la inserare opțiune:", err);
     if (err.code === 'ER_DUP_ENTRY') {
       res.status(409).json({ error: 'Opțiunea există deja' });
     } else {
-      console.error("Eroare la inserare opțiune:", err);
       res.status(500).json({ error: 'Eroare la inserare' });
     }
   }
 };
+
 
 const checkCnp = async (req, res) => {
   const { cnp } = req.params;
@@ -99,6 +132,7 @@ const checkCnp = async (req, res) => {
 };
 
 module.exports = {
+  upload,
   getVotes,
   voteOption,
   addOption,
